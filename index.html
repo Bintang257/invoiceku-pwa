@@ -1,0 +1,95 @@
+<!DOCTYPE html><html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0d47a1" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" />
+  <link rel="icon" href="/icon-192.png" type="image/png" />
+  <title>InvoiceKu Online</title>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 1rem;
+      background: #f5f5f5;
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    h1 {
+      color: #0d47a1;
+    }
+    input, textarea, select, button {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    button {
+      background: #0d47a1;
+      color: white;
+      border: none;
+      margin-top: 1rem;
+    }
+  </style>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>InvoiceKu Online</h1>
+    <p>Nota, Struk Belanja, dan Alat Kasir Digital Gratis untuk Toko & UMKM</p><label for="namaToko">Nama Toko</label>
+<input type="text" id="namaToko" placeholder="Toko Berkah Jaya" />
+
+<label for="produk">Tambah Produk</label>
+<textarea id="produk" placeholder="Contoh: Pensil - 2 x 3000"></textarea>
+
+<label for="pembayaran">Pembayaran</label>
+<input type="number" id="pembayaran" placeholder="Jumlah uang bayar" />
+
+<button onclick="generateStruk()">🧾 Buat Tagihan</button>
+
+<pre id="output"></pre>
+
+  </div>
+  <script>
+    function generateStruk() {
+      const toko = document.getElementById('namaToko').value;
+      const produkInput = document.getElementById('produk').value;
+      const bayar = parseInt(document.getElementById('pembayaran').value);const produkList = produkInput.split('\n').map(line => {
+    const [nama, qtyPrice] = line.split(' - ');
+    const [qty, price] = qtyPrice.split(' x ').map(Number);
+    return { nama, qty, price };
+  });
+
+  let total = 0;
+  let struk = `===== ${toko} =====\n`;
+
+  produkList.forEach(item => {
+    const subtotal = item.qty * item.price;
+    total += subtotal;
+    struk += `${item.nama}\n ${item.qty} x ${item.price.toLocaleString()} = ${subtotal.toLocaleString()}\n`;
+  });
+
+  const kembali = bayar - total;
+
+  struk += `\nTotal: ${total.toLocaleString()}\nBayar: ${bayar.toLocaleString()}\nKembali: ${kembali.toLocaleString()}\n======================`;
+
+  document.getElementById('output').innerText = struk;
+}
+
+  </script>
+</body>
+</html>
